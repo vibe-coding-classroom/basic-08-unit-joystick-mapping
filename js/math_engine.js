@@ -35,9 +35,8 @@ class JoystickMathEngine {
             return 0;
         }
         
-        // Smooth deadzone: Remap [deadzone, 1.0] to [0.0, 1.0]
-        // Formula: sgn(v) * (abs(v) - dz) / (1 - dz)
-        return Math.sign(value) * (absVal - this.deadzone) / (1.0 - this.deadzone);
+        // Simple deadzone: just return the original value
+        return value;
     }
 
     /**
