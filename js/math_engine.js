@@ -17,23 +17,27 @@ class JoystickMathEngine {
      * @returns {number} - Normalized value between -1.0 and 1.0
      */
     normalize(value, maxRange) {
-        // TODO: Implement normalization
-        // Step 1: Divide value by maxRange to get range [-1, 1]
-        // Step 2: Ensure the value doesn't exceed 1.0 or -1.0
-        return 0;
+        if (maxRange === 0) return 0;
+        let normalized = value / maxRange;
+        
+        // Clamp to [-1.0, 1.0]
+        return Math.max(-1.0, Math.min(1.0, normalized));
     }
 
     /**
      * Task 1: Apply deadzone filtering
      * @param {number} value - Normalized value [-1.0, 1.0]
-     * @returns {number} - Value after applying deadzone (returns 0 if within threshold)
+     * @returns {number} - Value after applying deadzone
      */
     applyDeadzone(value) {
-        // TODO: Implement deadzone logic
-        // If absolute value is less than this.deadzone, return 0
-        // CHALLENGE: How to avoid a "jump" in value when moving out of the deadzone?
-        // (i.e., mapping [deadzone, 1.0] to [0.0, 1.0])
-        return 0;
+        const absVal = Math.abs(value);
+        if (absVal <= this.deadzone) {
+            return 0;
+        }
+        
+        // Smooth deadzone: Remap [deadzone, 1.0] to [0.0, 1.0]
+        // Formula: sgn(v) * (abs(v) - dz) / (1 - dz)
+        return Math.sign(value) * (absVal - this.deadzone) / (1.0 - this.deadzone);
     }
 
     /**
@@ -43,10 +47,9 @@ class JoystickMathEngine {
      * @returns {number} - Value after exponential mapping
      */
     applyExponentialMapping(value) {
-        // TODO: Implement exponential mapping
-        // Hint: Math.sign(value), Math.abs(value), Math.pow(...)
-        // Ensure that 1.0 remains 1.0 and -1.0 remains -1.0
-        return 0;
+        const absVal = Math.abs(value);
+        // Exponential curve while preserving sign
+        return Math.sign(value) * Math.pow(absVal, this.exponent);
     }
 
     /**
