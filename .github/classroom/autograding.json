@@ -1,0 +1,44 @@
+{
+  "tests": [
+    {
+      "name": "Normalization & Raw Inputs",
+      "setup": "npm install",
+      "run": "npx jest -t 'Normalization should map raw values to'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 2,
+      "points": 25
+    },
+    {
+      "name": "Deadzone Logic",
+      "setup": "npm install",
+      "run": "npx jest -t 'Deadzone should return'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 2,
+      "points": 25
+    },
+    {
+      "name": "Exponential Mapping Algorithm",
+      "setup": "npm install",
+      "run": "npx jest -t 'Exponential mapping should'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 2,
+      "points": 25
+    },
+    {
+      "name": "Integration & Formatting",
+      "setup": "npm install",
+      "run": "npx jest -t 'Integration & Precision'",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 2,
+      "points": 25
+    }
+  ]
+}

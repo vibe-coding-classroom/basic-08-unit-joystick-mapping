@@ -16,5 +16,5 @@ jobs:
           node-version: 18
       - name: Install dependencies
         run: npm install
-      - name: Run tests
-        run: npm test
+      - name: Run Autograding Tests
+        uses: education/autograding@v1
