@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joystick Control Lab | Unit 08</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.5);
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        header {
+            width: 100%;
+            padding: 2rem;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            background: linear-gradient(to right, #818cf8, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            padding-bottom: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .joystick-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: none;
+            margin: 1rem 0;
+        }
+
+        .joystick-base {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            border: 1px dashed rgba(99, 102, 241, 0.3);
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .joystick-handle {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+            border-radius: 50%;
+            cursor: grab;
+            position: absolute;
+            z-index: 10;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.1s ease-out;
+        }
+
+        .joystick-handle::after {
+            content: '';
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+        }
+
+        .stats-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-box {
+            background: rgba(15, 23, 42, 0.4);
+            padding: 1rem;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .controls {
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-dim);
+            font-size: 0.875rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            appearance: none;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .value-display {
+            float: right;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 16px;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .network-monitor {
+            width: 100%;
+            margin-top: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            background: #000;
+            padding: 1rem;
+            border-radius: 12px;
+            color: #34d399;
+            height: 120px;
+            overflow-y: auto;
+            border: 1px solid rgba(52, 211, 153, 0.2);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Control Math: Joystick Mapping</h1>
+        <p style="color: var(--text-dim); margin-top: 0.5rem;">Unit 08 - Normalization, Deadzone & Exponential Curves</p>
+    </header>
+
+    <div class="container">
+        <!-- Section 1: Interaction -->
+        <div class="card">
+            <span class="badge">REAL-TIME INPUT</span>
+            <div class="joystick-container" id="joystick-boundary">
+                <div class="joystick-base"></div>
+                <div class="joystick-handle" id="joystick-handle"></div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Raw X,Y</div>
+                    <div class="stat-value" id="raw-display">0, 0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Processed Output</div>
+                    <div class="stat-value" id="out-display">0.0, 0.0</div>
+                </div>
+            </div>
+
+            <div class="network-monitor" id="network-log">
+                [SYSTEM] Ready...
+                [SYSTEM] Waiting for movement...
+            </div>
+        </div>
+
+        <!-- Section 2: Configuration -->
+        <div class="card">
+            <span class="badge">MATH ENGINE CONFIG</span>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label>Deadzone Radius <span class="value-display" id="deadzone-val">10%</span></label>
+                    <input type="range" id="deadzone-range" min="0" max="50" value="10">
+                </div>
+
+                <div class="control-group">
+                    <label>Mapping Exponent (n) <span class="value-display" id="exponent-val">2.0</span></label>
+                    <input type="range" id="exponent-range" min="10" max="40" value="20">
+                </div>
+
+                <div class="control-group">
+                    <label>Throttle Rate <span class="value-display" id="throttle-val">100ms</span></label>
+                    <input type="range" id="throttle-range" min="20" max="1000" step="20" value="100">
+                </div>
+            </div>
+
+            <label>Transfer Function Visualizer</label>
+            <div class="chart-container">
+                <canvas id="curve-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/math_engine.js"></script>
+    <script>
+        // UI Interaction Logic
+        const handle = document.getElementById('joystick-handle');
+        const boundary = document.getElementById('joystick-boundary');
+        const rawDisplay = document.getElementById('raw-display');
+        const outDisplay = document.getElementById('out-display');
+        const networkLog = document.getElementById('network-log');
+        
+        // Config inputs
+        const dzRange = document.getElementById('deadzone-range');
+        const exRange = document.getElementById('exponent-range');
+        const thRange = document.getElementById('throttle-range');
+
+        // Engine instance
+        const engine = new JoystickMathEngine({
+            deadzone: 0.1,
+            exponent: 2.0
+        });
+
+        let isDragging = false;
+        let lastSentTime = 0;
+        let throttleMs = 100;
+        const maxPhysicalRadius = 100;
+
+        // Joystick Movement
+        boundary.addEventListener('mousedown', startDrag);
+        window.addEventListener('mousemove', drag);
+        window.addEventListener('mouseup', endDrag);
+
+        boundary.addEventListener('touchstart', (e) => startDrag(e.touches[0]));
+        window.addEventListener('touchmove', (e) => drag(e.touches[0]));
+        window.addEventListener('touchend', endDrag);
+
+        function startDrag(e) {
+            isDragging = true;
+            drag(e);
+        }
+
+        function endDrag() {
+            isDragging = false;
+            handle.style.transform = `translate(0px, 0px)`;
+            updateOutput(0, 0);
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+
+            const rect = boundary.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            let x = e.clientX - centerX;
+            let y = e.clientY - centerY;
+
+            const distance = Math.sqrt(x * x + y * y);
+            if (distance > maxPhysicalRadius) {
+                const angle = Math.atan2(y, x);
+                x = Math.cos(angle) * maxPhysicalRadius;
+                y = Math.sin(angle) * maxPhysicalRadius;
+            }
+
+            handle.style.transform = `translate(${x}px, ${y}px)`;
+            
+            // Raw values are -100 to 100 (Y is inverted for joystick logic usually, but we'll keep physical for now)
+            updateOutput(x, -y); 
+        }
+
+        function updateOutput(rx, ry) {
+            rawDisplay.textContent = `${Math.round(rx)}, ${Math.round(ry)}`;
+            
+            // Process through Engine
+            const result = engine.process(rx, ry, maxPhysicalRadius);
+            outDisplay.textContent = `${result.x.toFixed(2)}, ${result.y.toFixed(2)}`;
+
+            // Throttle & "Send"
+            const now = Date.now();
+            if (now - lastSentTime > throttleMs) {
+                logNetwork(result.x, result.y);
+                lastSentTime = now;
+            }
+        }
+
+        function logNetwork(x, y) {
+            const entry = document.createElement('div');
+            entry.textContent = `[SEND] { x: ${x.toFixed(2)}, y: ${y.toFixed(2)} }`;
+            networkLog.prepend(entry);
+            if (networkLog.childNodes.length > 10) networkLog.lastChild.remove();
+        }
+
+        // Config Listeners
+        dzRange.oninput = (e) => {
+            const val = e.target.value / 100;
+            document.getElementById('deadzone-val').textContent = e.target.value + '%';
+            engine.deadzone = val;
+            updateChart();
+        };
+
+        exRange.oninput = (e) => {
+            const val = e.target.value / 10;
+            document.getElementById('exponent-val').textContent = val.toFixed(1);
+            engine.exponent = val;
+            updateChart();
+        };
+
+        thRange.oninput = (e) => {
+            throttleMs = parseInt(e.target.value);
+            document.getElementById('throttle-val').textContent = throttleMs + 'ms';
+        };
+
+        // Chart Logic
+        const ctx = document.getElementById('curve-chart').getContext('2d');
+        let chart;
+
+        function updateChart() {
+            const labels = [];
+            const data = [];
+            for (let i = -100; i <= 100; i += 5) {
+                const norm = i / 100;
+                let processed = engine.applyDeadzone(norm);
+                processed = engine.applyExponentialMapping(processed);
+                labels.push(norm.toFixed(1));
+                data.push(processed);
+            }
+
+            if (chart) {
+                chart.data.labels = labels;
+                chart.data.datasets[0].data = data;
+                chart.update();
+            } else {
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Mapping Curve',
+                            data: data,
+                            borderColor: '#818cf8',
+                            backgroundColor: 'rgba(129, 140, 248, 0.1)',
+                            borderWidth: 3,
+                            pointRadius: 0,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { display: false },
+                            y: { 
+                                min: -1, 
+                                max: 1,
+                                grid: { color: 'rgba(255,255,255,0.05)' },
+                                ticks: { color: '#94a3b8' }
+                            }
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+
+        updateChart();
+    </script>
+</body>
+</html>

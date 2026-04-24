@@ -1,60 +1,36 @@
-針對 **`basic-08-unit-joystick-mapping` (搖桿數據的本質：歸一化、映射與死區)** 單元，這是學員從「能動就好」跨入「專業操控」的關鍵課程。它要求學員具備 **控制數學 (Control Math)** 的思維，學習如何將物理世界的像素位移，轉化為數學上的標準比例，並透過非線性對映打造出「職人級」的細膩手感。
+# Unit 08: Joystick Mapping - The Art of Control Math
 
-以下是在 **GitHub Classroom** 部署其作業 (Assignments) 的具體建議：
+> **Student Name:** [Your Name]
+> **Completion Date:** [Date]
 
-### 1. 範本倉庫 (Template Repo) 配置建議
-搖桿控制作業的核心在於「數據轉換」與「傳輸優化」，範本應包含前端 UI 與邏輯框架，建議包含：
-*   **📂 `index.html`**：**搖桿控制介面**。內建一個視覺化的虛擬搖桿元件。
-*   **📂 `js/joystick_logic.js`**：**控制數學實作區**。學員在此撰寫歸一化函式、死區過濾邏輯以及指數對映公式。
-*   **📂 `README.md`**：**操控感調校報告**。提供表格讓學員記錄：「線性模式」與「指數模式」在微操時的數據差異感。
-*   **📂 `docs/MAPPING_CURVE.md`**：**函數曲線分析**。要求學員說明他們選擇的 `pow(v, n)` 指數值（如 1.5 或 2.0）之原因，並描述其對操縱感的提升。
+## 🎯 Project Overview
+In this lab, I implemented the core "Control Math" required for high-precision joystick operation. This includes normalizing raw hardware data, filtering mechanical noise with deadzones, and creating a "pro-feel" with exponential mapping.
 
----
+## 🛠 Features Implemented
+- [ ] **Normalization**: Mapping physical range to a standard `[-1.0, 1.0]` float.
+- [ ] **Deadzone Protection**: Ensuring "absolute zero" at the center to prevent motor jitter.
+- [ ] **Exponential Mapping**: Smooth low-speed control with full-power capability at the limits.
+- [ ] **Network Throttling**: Efficient data transmission to prevent network congestion.
 
-### 2. 作業任務部署細節
+## 📊 Lab Reports
+Detailed data comparisons and observations can be found in the [Control Lab Report](docs/Control_Lab.md).
 
-#### 任務 1：數據標準化實作 (Joystick Normalization Lab)
-*   **目標**：掌握跨平台數據標準化的概念，理解「死區」在抑制機械雜訊中的決定性作用。
-*   **Classroom 部署建議**：
-    *   **座標規範化**：將搖桿的物理位移轉為 `[-1.0, 1.0]` 的浮點數。
-    *   **死區防護**：**核心關鍵點**。實作 10% 閥值的死區。當搖桿在中心附近微動時，輸出必須被強制拉回「絕對 0.0」。
-    *   **驗證要點**：放開搖桿後，介面顯示的數據是否會因為雜訊而出現 `0.02` 等細微抖動？（若會，則死區實作失敗）。
+### 1. Mapping Comparison
+| Mode | Control Feel Description |
+| :--- | :--- |
+| **Linear** | [e.g., Very direct, hard to make small adjustments] |
+| **Exponential** | [e.g., Silky smooth at low speeds, great for precision] |
 
-#### 任務 2：非線性映射：指數型油門 (Exponential Mapping Lab)
-*   **目標**：學習如何利用數學函式模擬「高級感」，提升低速精準操控的能力，避免起步過於突兀。
-*   **Classroom 部署建議**：
-    *   **曲線實作**：實作公式 `output = sgn(input) * pow(abs(input), exponent)`。
-    *   **正負號保留**：**技術審核重點**。學員必須正確處理負數區間，確保油門推後與推前都能運作。
-    *   **感官對比**：在 README 中描述在「倒車入庫」等精細動作中，指數映射如何協助使用者比線性映射更容易成功。
-    *   **驗證要點**：推到底時是否能精準達到 `1.0` 或 `-1.0`？低速區間的數據增長是否變得更加平緩？
+### 2. Throttling Proof
+![Packet Log Log](assets/packet_log.png)
+*(Replace this with a screenshot of your Network Tab or Console logs showing the stable frequency of data packets)*
 
-#### 任務 3：數據打包與發送節流 (Throttling & Packaging Lab)
-*   **目標**：建立網路效率與負擔的權衡意識，防止數據「濫發」造成網路擁塞 (Network Congestion)。
-*   **Classroom 部署建議**：
-    *   **負擔輕量化**：封裝成 JSON 物件，並將座標限制在小數點後兩位（如 `0.85` 而非 `0.8499999`）。
-    *   **節流機制 (Throttling)**：實作時間計數器。限制發送頻率（如：每 100ms 傳送一次），即使使用者瘋狂轉動搖桿。
-    *   **靜默抑制**：當數值與上一次相比「變化微小」時，停止發送以節省流量。
-    *   **驗證要點**：在瀏覽器控制台觀察 Network Tab。快速滑動搖桿時，封包發送頻率是否維持穩定而非爆炸式增長？
+## 🧠 Reflection
+**How does mathematical mapping change the user experience of a remote-controlled system?**
+[Your reflection here...]
 
 ---
-
-### 3. 控制品質與操控演算法點評標準 (Control Quality & UX Standards)
-此單元的價值在於 **「對數值的極限掌控力與對使用者感覺的數學量化能力」**：
-*   [ ] **中心點絕對靜默**：死區是否能讓馬達在靜止時遠離震顫？
-*   [ ] **對應精準力**：最大推力與最小推力是否能完美對準物理邊界？
-*   [ ] **通訊專業度**：是否具備節流意識，將網路資源花在「變動」的瞬間而非重複發送？
-
-### 📁 推薦範本結構 (GitHub Classroom Template)：
-```text
-.
-├── index.html           # 前端：搖桿視覺化 UI
-├── js/math_engine.js    # 核心：歸一化、死區與曲線演算法實作
-├── docs/Control_Lab.md  # 文檔：紀錄線性 vs 指數的實測數據對比
-├── README.md            # 總結：我如何透過數學對映打造「職人級」的賽車感
-└── assets/packet_log.png # 證據：Network Tab 中的節流效果截圖
-```
-
-透過這種部署方式，學生能體驗到 **「好的全端工程師，不僅是把功能做出來的人，而是能用數學公式定義『操縱感』、在雜訊中建立秩序、並在有限頻寬下追求極致連動反應的操控調校大師」**。掌握搖桿對映與節流技術後，學員將擁有了開發「搖桿遙控系統、無人機控制台、專業遊戲介面」最核心也最具質感的控制開發實力！_
-|
-|
-太給力了！我們已經將 **基礎 08**（控制數學）的搖桿對映單元完成了。這標誌著學員終於能用「演算法」來提升「手感」。恭喜！課程地圖的數學與操控板塊已經固若金湯！
+### Getting Started
+1. Open `index.html` in your browser.
+2. Open `js/math_engine.js` and implement the TODO sections.
+3. Test your logic using the interactive UI and update the reports.
