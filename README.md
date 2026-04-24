@@ -1,5 +1,3 @@
-Viewed basic-08-unit-joystick-mapping.html:1-381
-
 針對 **`basic-08-unit-joystick-mapping` (搖桿數據的本質：歸一化、映射與死區)** 單元，這是學員從「能動就好」跨入「專業操控」的關鍵課程。它要求學員具備 **控制數學 (Control Math)** 的思維，學習如何將物理世界的像素位移，轉化為數學上的標準比例，並透過非線性對映打造出「職人級」的細膩手感。
 
 以下是在 **GitHub Classroom** 部署其作業 (Assignments) 的具體建議：
